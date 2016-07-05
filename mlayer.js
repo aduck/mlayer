@@ -68,19 +68,31 @@ function position(o,p){
 	if(p instanceof Array){
 		pl=p[0];
 		pv=p[1];
-	}else if(typeof p=='string'){
+	}else{
 		pl=pv=p;
 	}
-	function _pos(a,b,c,d){
-		if(a=='center'){
-			o['style'][b]='50%';
-			o['style'][c]=-parseInt(d)/2+'px';
-		}else if(typeof a=='number'){
-			o['style'][b]=[d]+'px';
-		}
+	// 水平方向
+	if(pl=='center'){
+		o.style.left='50%';
+		o.style.marginLeft=-parseInt(ow)/2+'px';
+	}else if(pl=='start'){
+		o.style.left='0';
+	}else if(pl=='end'){
+		o.style.right='0';
+	}else if(typeof pl=='number'){
+		o.style.left=pl+'px';
 	}
-	_pos(pl,'left','marginLeft',ow);
-	_pos(pv,'top','marginTop',oh);
+	// 垂直方向
+	if(pv=='center'){
+		o.style.top='50%';
+		o.style.marginTop=-parseInt(oh)/2+'px';
+	}else if(pv=='start'){
+		o.style.top='0';
+	}else if(pv=='end'){
+		o.style.bottom='0';
+	}else if(typeof pv=='number'){
+		o.style.top=pv+'px';
+	}
 }
 
 function addEvent(o,type,cb){
