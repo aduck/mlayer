@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>mlayer</title>
+	<link rel="stylesheet" href="mlayer.css">
+	<style>
+	*{margin:0;padding:0;}
+	</style>
+</head>
+<body>
+	<button id="btn">弹弹弹</button>
+	<script src="mlayer.js"></script>
+	<script>
+	var btn=document.getElementById('btn');
+	btn.onclick=function(){
+		var l1=layer.open({
+			content:'aaaaaaaaaaaa<span id="close">关闭</span>',
+			shadow:-1,
+			closeBtns:['close'],
+			effect:2
+		});
+		var l2=layer.open({
+			content:'bbbbbbbbbbbbb<span id="close2">关闭</span>',
+			shadow:-1,
+			closeBtns:['close2'],
+			effect:3
+		});
+	}
+	</script>
+</body>
+</html>
