@@ -58,6 +58,9 @@ function isEqual(a,b){
 	return false;
 }
 
+/*
+	现在全部是相对于window定位,相对于具体元素定位暂未实现
+*/
 function position(o,p){
 	var pl,
 		pv,
@@ -102,7 +105,8 @@ function addEvent(o,type,cb){
 		o.attachEvent('on'+type,cb);
 	}
 }
-
+/*
+	一般不支持classList属性也不会支持css3动画
 function mClass(o,m,cname){
 	function _hasClass(o,cname){
 		var _classArr=o.className.split(' ');
@@ -125,14 +129,14 @@ function mClass(o,m,cname){
 		}
 	}
 }
-
+*/
 function Mlayer(opts){
 	var opts=this._opts=opts || {};
 	this.content=opts.content || '';
 	this.position=opts.position || 'center';
 	this.shadow=opts.shadow ? opts.shadow : 0;  // -1没有 0有无关闭 1有可关闭
 	this.closeBtns=opts.closeBtns || [];
-	this.effect=opts.effect || 1; // 1:fade 2:zoom 3:fromTop 4.formBottom
+	this.effect=opts.effect || 0; // 0:fade 1:zoom 2:fromTop 3.formBottom
 	this.open=1;
 	this.init.apply(this,arguments);
 }
@@ -205,8 +209,6 @@ layer.open=function(opts){
 	effect=items[index].container.getAttribute('data-effect');
 	if('classList' in items[index].container){
 		items[index].container.classList.add(effect);
-	}else{
-		mClass(items[index].container,'add',effect);
 	}
 	return index;
 }
@@ -219,8 +221,6 @@ layer.close=function(i){
 	container.style.display='none';
 	if('classList' in container){
 		container.classList.remove(effect);
-	}else{
-		mClass(container,'remove',effect);
 	}
 	for(var j=0,len=items.length;j<len;j++){
 		if(items[j].open) return;
@@ -239,8 +239,6 @@ layer.closeAll=function(){
 		container.style.display='none';
 		if('classList' in container){
 			container.classList.remove(effect);
-		}else{
-			mClass(container,'remove',effect);
 		}
 	}
 }
