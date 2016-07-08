@@ -30,6 +30,13 @@
 		}
 	}
 
+	function extend(a,b){
+		for(var x in b){
+			a[x]=b[x];
+		}
+		return a;
+	}
+
 	function isEqual(a,b){
 		if(typeof a!='object' && typeof b!='object' ){
 			return a==b;
@@ -58,43 +65,86 @@
 		return false;
 	}
 
-	/*
-		现在全部是相对于window定位,相对于具体元素定位暂未实现
-	*/
-	function position(o,p){
-		var pl,
-			pv,
-			_ow=getStyle(o,'width'),
-			_oh=getStyle(o,'height'),
-			ow=_ow && _ow !='auto' ? _ow : o.offsetWidth,
-			oh=_oh && _oh !='auto' ? _oh : o.offsetHeight;
-		if(p instanceof Array){
-			pl=p[0];
-			pv=p[1];
+	function getOffset(obj,dir){
+		var rect=obj.getBoundingClientRect();
+		if(dir=='top'){
+			return rect.top+(window.pageYOffset || document.documentElement.scrollTop)-(document.documentElement.clientTop || 0);
+		}else if(dir=='left'){
+			return rect.left+(window.pageXOffset || document.documentElement.scrollLeft)-(document.documentElement.clientLeft || 0);
+		}
+	}
+
+	// 新版定位
+	function position(opts){
+		var o=opts.o,
+			rel=opts.rel || null,
+			posArr=opts.posArr || ['center','center'],
+			offset=opts.offset || [0,0];
+		if(rel){
+			// 相对元素
+			o.style.position='absolute';
+			var _ow=getStyle(o,'width'),
+				_oh=getStyle(o,'height'),
+				_rw=getStyle(rel,'width'),
+				_rh=getStyle(rel,'height'),
+				ow=_ow && _ow !='auto' ? parseInt(_ow) : parseInt(o.offsetWidth),
+				oh=_oh && _oh !='auto' ? parseInt(_oh) : parseInt(o.offsetHeight),
+				rw=_rw && _rw !='auto' ? parseInt(_rw) : parseInt(rel.offsetWidth),
+				rh=_rh && _rh !='auto' ? parseInt(_rh) : parseInt(rel.offsetHeight),
+				rl=parseInt(getOffset(rel,'left')),
+				rt=parseInt(getOffset(rel,'top')),
+				posL=posArr[0],
+				posV=posArr[1],
+				offL=offset[0],
+				offV=offset[1];
+			if(posL=='leftIn'){
+				o.style.left=rl+offL+'px';
+			}else if(posL=='leftOut'){
+				o.style.left=rl-ow-offL+'px';
+			}else if(posL=='rightIn'){
+				o.style.left=rl+rw-ow-offL+'px';
+			}else if(posL=='rightOut'){
+				o.style.left=rl+rw+offL+'px';
+			}else if(posL=='center'){
+				o.style.left=rl+(rw-ow)/2+'px';
+			}
+			if(posV=='topIn'){
+				o.style.top=rt+offV+'px';
+			}else if(posV=='topOut'){
+				o.style.top=rt-oh-offV+'px';
+			}else if(posV=='bottomIn'){
+				o.style.top=rt+rh-oh-offV+'px';
+			}else if(posV=='bottomOut'){
+				o.style.top=rt+rh+offV+'px';
+			}else if(posV=='center'){
+				o.style.top=rt+(rh-oh)/2+'px';
+			}
 		}else{
-			pl=pv=p;
-		}
-		// 水平方向
-		if(pl=='center'){
-			o.style.left='50%';
-			o.style.marginLeft=-parseInt(ow)/2+'px';
-		}else if(pl=='start'){
-			o.style.left='0';
-		}else if(pl=='end'){
-			o.style.right='0';
-		}else if(typeof pl=='number'){
-			o.style.left=pl+'px';
-		}
-		// 垂直方向
-		if(pv=='center'){
-			o.style.top='50%';
-			o.style.marginTop=-parseInt(oh)/2+'px';
-		}else if(pv=='start'){
-			o.style.top='0';
-		}else if(pv=='end'){
-			o.style.bottom='0';
-		}else if(typeof pv=='number'){
-			o.style.top=pv+'px';
+			o.style.position='fixed';
+			var _ow=getStyle(o,'width'),
+				_oh=getStyle(o,'height'),
+				ow=_ow && _ow !='auto' ? parseInt(_ow) : parseInt(o.offsetWidth),
+				oh=_oh && _oh !='auto' ? parseInt(_oh) : parseInt(o.offsetHeight);
+				posL=posArr[0],
+				posV=posArr[1],
+				offL=offset[0],
+				offV=offset[1];
+			if(posL=='center'){
+				o.style.left='50%';
+				o.style.marginLeft=-parseInt(ow)/2+'px';
+			}else if(posL=='left'){
+				o.style.left=offL+'px';
+			}else if(posL=='right'){
+				o.style.right=offL+'px';
+			}
+			if(posV=='center'){
+				o.style.top='50%';
+				o.style.marginTop=-parseInt(oh)/2+'px';
+			}else if(posV=='top'){
+				o.style.top=offV+'px';
+			}else if(posV=='bottom'){
+				o.style.bottom=offV+'px';
+			}
 		}
 	}
 
@@ -109,7 +159,7 @@
 	function Mlayer(opts){
 		var opts=this._opts=opts || {};
 		this.content=opts.content || '';
-		this.position=opts.position || 'center';
+		this.position=opts.position || {};
 		this.shadow=opts.shadow ? opts.shadow : 0;  // -1没有 0有无关闭 1有可关闭
 		this.closeBtns=opts.closeBtns || [];
 		this.submit=opts.submit || [];  // [按钮id,回调函数]
@@ -123,9 +173,9 @@
 			shadower,
 			btns=this.closeBtns,
 			submit=this.submit,
-			self=this,
 			p=this.position,
-			effect=this.effect;
+			effect=this.effect,
+			self=this;
 		if(shadow==0){
 			shadower=this.shadower=createShadow();
 		}else if(shadow==1){
@@ -161,7 +211,7 @@
 				submit[1]();
 			})
 		}
-		position(container,p);
+		position(extend(p,{o:container}));
 	}
 
 	// 判断是否已存在
