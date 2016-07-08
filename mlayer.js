@@ -1,7 +1,6 @@
 ;(function(){
 	var layer={},
 		zIndex=999,  // 默认层级
-		count=0, 	// 弹层计数
 		attached=false; // shadow是否绑定事件
 	layer.items=[];  // 所有弹层
 	layer.effect=['fadeIn','zoomIn','fromTop','fromBottom'];  // 动画管理
@@ -156,7 +155,7 @@
 			}
 		}
 		// 添加提交事件
-		if(submit.length>0){
+		if(submit.length==2){
 			var sBtn=document.getElementById(submit[0]);
 			addEvent(sBtn,'click',function(){
 				submit[1]();
