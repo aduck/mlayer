@@ -18,6 +18,9 @@
 			content:'aaaaaaaaaaaa<span id="close">关闭</span>',
 			shadow:-1,
 			closeBtns:['close'],
+			submit:['close',function(){
+				alert('closed!')
+			}],
 			effect:2
 		});
 		var l2=layer.open({
