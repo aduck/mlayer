@@ -1,5 +1,5 @@
 # mlayer
-...............
+
 ###APIS
 `layer.open({
 
